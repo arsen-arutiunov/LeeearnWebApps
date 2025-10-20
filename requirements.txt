@@ -1,0 +1,13 @@
+fastapi
+uvicorn
+sqlalchemy
+asyncpg
+python-dotenv
+gunicorn
+aiohttp
+pydantic
+starlette
+redis
+greenlet
+itsdangerous
+aiogram

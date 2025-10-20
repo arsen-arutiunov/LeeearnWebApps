@@ -1,0 +1,87 @@
+# Test your FastAPI endpoints
+
+GET http://127.0.0.1:8000/
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/hello/User
+Accept: application/json
+
+###
+e229301a-9272-4469-8f4f-ea4163b117ad
+
+
+### Тест 1: Включение бота 1
+POST http://127.0.0.1:8000/api/v1/Bots/Config/e229301a-9272-4469-8f4f-ea4163b117ad
+Content-Type: application/json
+
+{
+  "is_enabled": true,
+  "bot_name": "Тестовый Бот Школы #1",
+  "bot_token": "8054354590:AAHmXGA5SdOJrLHSUQlCd6J-1ST-Tm1fcLg",
+  "welcome_message": "Привет! Это тестовый бот для школы 1."
+}
+
+### Тест 2: Включение бота 2
+POST http://127.0.0.1:8000/api/v1/Bots/Config/e4b6c9c0-8b62-45ce-b9e1-6fbe528ad47b
+Content-Type: application/json
+
+{
+  "is_enabled": true,
+  "bot_name": "Тестовый Бот Школы #2",
+  "bot_token": "7933630466:AAGjG46v6srj8MeVV1yzUFsi4QgmKeISIc4",
+  "welcome_message": "Привет! Это тестовый бот для школы 2."
+}
+
+### Тест 3: Обновление приветствия
+POST http://127.0.0.1:8000/api/v1/Bots/Config/e229301a-9272-4469-8f4f-ea4163b117ad
+Content-Type: application/json
+
+{
+  "welcome_message": "Добро пожаловать! Ваше приветствие обновлено."
+}
+
+### Тест 4: Выключение бота 1
+POST http://127.0.0.1:8000/api/v1/Bots/Config/e229301a-9272-4469-8f4f-ea4163b117ad
+Content-Type: application/json
+
+{
+  "is_enabled": false
+}
+
+### Тест 5: Включение бота 1
+POST http://127.0.0.1:8000/api/v1/Bots/Config/e229301a-9272-4469-8f4f-ea4163b117ad
+Content-Type: application/json
+
+{
+  "is_enabled": true
+}
+
+### Тест 4: Выключение бота 2
+POST http://127.0.0.1:8000/api/v1/Bots/Config/e4b6c9c0-8b62-45ce-b9e1-6fbe528ad47b
+Content-Type: application/json
+
+{
+  "is_enabled": false
+}
+
+### Тест 5: Включение бота 2
+POST http://127.0.0.1:8000/api/v1/Bots/Config/e4b6c9c0-8b62-45ce-b9e1-6fbe528ad47b
+Content-Type: application/json
+
+{
+  "is_enabled": true
+}
+
+###
+
+GET http://127.0.0.1:8000/api/v1/Bots/Config/e4b6c9c0-8b62-45ce-b9e1-6fbe528ad47b/status
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8000/api/v1/Bots/Config/stats
+Accept: application/json
+
+###
