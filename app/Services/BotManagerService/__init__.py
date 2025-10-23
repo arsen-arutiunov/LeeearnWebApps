@@ -7,7 +7,7 @@ from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
 
 from app.Infrastructure.Database import async_session
-from .Handlers import register_handlers
+from .Handlers import create_main_router
 from .Middleware import DbSessionMiddleware
 
 
@@ -81,7 +81,7 @@ class BotManager:
         stop_event = asyncio.Event()
 
         # Регистрируем хэндлеры
-        register_handlers(dp)
+        dp.include_router(create_main_router())
 
         # Создаем задачу
         task = asyncio.create_task(
