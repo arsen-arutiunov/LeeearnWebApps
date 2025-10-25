@@ -27,4 +27,6 @@ class TelegramBotConfig(Base):
     # --- Шаблоны сообщений ---
     welcome_message = Column(Text, nullable=True, default="Привет! 👋")
 
+    image_url = Column(String(255), nullable=True)
+
     # ... можно добавить и другие шаблоны ...

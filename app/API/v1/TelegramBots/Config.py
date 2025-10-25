@@ -18,6 +18,7 @@ class BotConfigUpdate(BaseModel):
     bot_name: str | None = None
     bot_token: str | None = None
     welcome_message: str | None = None
+    image_url: str | None = None
 
 
 @config_router.get("/stats")
@@ -93,7 +94,8 @@ async def update_bot_config(
         "is_enabled": updated_config_model.is_enabled,
         "bot_name": updated_config_model.bot_name,
         "bot_token": updated_config_model.bot_token,
-        "welcome_message": updated_config_model.welcome_message
+        "welcome_message": updated_config_model.welcome_message,
+        "image_url": updated_config_model.image_url,
     }
 
     # 4. ВАЖНО: Ждем завершения перезапуска (убрали asyncio.create_task!)

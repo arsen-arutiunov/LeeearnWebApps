@@ -34,6 +34,7 @@ class TelegramBotConfigService:
                 if hasattr(db_config, key):
                     setattr(db_config, key, value)
         else:
+            db_config = TelegramBotConfig(**settings_data)
             # Создаем новый
             db_config = TelegramBotConfig(school_id=school_id, **settings_data)
             self.db.add(db_config)

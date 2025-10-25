@@ -37,12 +37,53 @@ class Markup:
 
 
     @staticmethod
-    async def start_menu():
+    async def teacher_menu():
         buttons = [
             ["Мій розклад на сьогодні", "start_schedule"],
             ["Керування уроками", "start_lessons"],
-            ["Подивитися свій рейтинг", "my_rating"],
+            # ["Подивитися свій рейтинг", "my_rating"],
             ["Загальна допомога", "start_help"],
-            # ["Налаштування", "start_settings"]
+            # ["Налаштування", "start_settings"],
+            ["Змінити роль ↩️", "back_to_select_role"]
         ]
         return Markup.from_template(buttons, row_width=1)
+
+    @staticmethod
+    async def start_help(supervisor_url, branch):
+        buttons = [
+            # ["Мій рейтинг", "rating"],
+            # ["Взяти вихідний", "dayoff"],
+            ["Буде посилання на тг",
+             "https://t.me/example"],
+            ["Буде посилання на сайт",
+             f"https://example.com"],
+            ["Повернутись ↩️", "start"]
+        ]
+        return Markup.from_template(buttons, row_width=2)
+
+    @staticmethod
+    async def curators_menu():
+        buttons = [
+            ["Змінити роль ↩️", "back_to_select_role"]
+        ]
+        return Markup.from_template(buttons, row_width=1)
+
+    @staticmethod
+    async def lessons_menu():
+        buttons = [
+            ["Немає учня на уроці", "lesson_nopupil"],
+            ["Перенести плановий урок", "lesson_move_accept"],
+            ["Зробити звіт за урок", "lesson_report"],
+            ["Повернутись ↩️", "start"]
+        ]
+        return Markup.from_template(buttons, row_width=2)
+
+    @staticmethod
+    async def schedule_menu():
+        buttons = [
+            ["📅 Сьогодні", "start_schedule"],
+            ["📆 Завтра", "start_schedule_tomorrow"],
+            ["🔁 Оновити", "start_schedule"],
+            ["Повернутись ↩️", "start"]
+        ]
+        return Markup.from_template(buttons, row_width=2)

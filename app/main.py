@@ -48,7 +48,8 @@ async def lifespan(app: FastAPI):
                     "is_enabled": config_model.is_enabled,
                     "bot_name": config_model.bot_name,
                     "bot_token": config_model.bot_token,
-                    "welcome_message": config_model.welcome_message
+                    "welcome_message": config_model.welcome_message,
+                    "image_url": config_model.image_url
                 }
                 tasks.append(bot_manager.start_bot(config_dict))
 

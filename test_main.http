@@ -20,7 +20,8 @@ Content-Type: application/json
   "is_enabled": true,
   "bot_name": "Тестовый Бот Школы #1",
   "bot_token": "8054354590:AAHmXGA5SdOJrLHSUQlCd6J-1ST-Tm1fcLg",
-  "welcome_message": "Привет! Это тестовый бот для школы 1."
+  "welcome_message": "Привет! Это тестовый бот для школы 1.",
+  "image_url": "https://imgpx.com/lZeppHfb5CGS"
 }
 
 ### Тест 2: Включение бота 2
@@ -31,7 +32,8 @@ Content-Type: application/json
   "is_enabled": true,
   "bot_name": "Тестовый Бот Школы #2",
   "bot_token": "7933630466:AAGjG46v6srj8MeVV1yzUFsi4QgmKeISIc4",
-  "welcome_message": "Привет! Это тестовый бот для школы 2."
+  "welcome_message": "Привет! Это тестовый бот для школы 2.",
+  "image_url": "https://imgpx.com/wFydlgEDibGd"
 }
 
 ### Тест 3: Обновление приветствия
