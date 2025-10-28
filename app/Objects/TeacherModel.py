@@ -14,6 +14,7 @@ class Teacher(Base):
         primary_key=True,
         nullable=False
     )
+    leeearn_id = Column(UUID(as_uuid=True))
 
     # TODO: удалить или реализовать (в БД не добавил)
     # supervisor_id = Column(BigInteger, ForeignKey("teachers.supervisors.telegram_id"), nullable=True)

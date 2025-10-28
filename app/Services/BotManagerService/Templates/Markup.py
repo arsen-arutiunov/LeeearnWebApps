@@ -87,3 +87,11 @@ class Markup:
             ["Повернутись ↩️", "start"]
         ]
         return Markup.from_template(buttons, row_width=2)
+
+    @staticmethod
+    async def move_lesson_acceptation():
+        buttons = [
+            ["Продовжити", "lesson_move"],
+            ["Повернутись ↩️", "start_lessons"]
+        ]
+        return Markup.from_template(buttons, row_width=2)

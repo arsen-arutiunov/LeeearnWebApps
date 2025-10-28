@@ -9,9 +9,11 @@ from app.Objects.TeacherModel import Teacher
 
 # ---- Получение ----
 
-async def get_teacher_by_user_id(session: AsyncSession, user_id: UUID) -> Teacher | None:
+async def get_teacher_by_user_id(session: AsyncSession,
+                                 user_id: UUID) -> Teacher | None:
     """Получить преподавателя по user_id"""
-    result = await session.execute(select(Teacher).where(Teacher.user_id == user_id))
+    result = await session.execute(
+        select(Teacher).where(Teacher.user_id == user_id))
     return result.scalar_one_or_none()
 
 
@@ -24,22 +26,24 @@ async def get_all_teachers(session: AsyncSession) -> Sequence[Teacher]:
 # ---- Создание ----
 
 async def create_teacher(
-    session: AsyncSession,
-    user_id: UUID,
-    additional_branch_id: int = 0,
-    is_contract_accepted: bool = False,
-    contract_accepted_time: str | None = None,
-    guide_message_id: int | None = None,
-    weekly_points: int = 0,
-    monthly_points: int = 0,
-    setting_delete_proofs: bool = True,
-    setting_report_notification: bool = True,
-    setting_time_zone: str | None = None,
-    setting_screenshot_time_kyiv: bool = False
+        session: AsyncSession,
+        user_id: UUID,
+        leeearn_id: UUID,
+        additional_branch_id: int = 0,
+        is_contract_accepted: bool = False,
+        contract_accepted_time: str | None = None,
+        guide_message_id: int | None = None,
+        weekly_points: int = 0,
+        monthly_points: int = 0,
+        setting_delete_proofs: bool = True,
+        setting_report_notification: bool = True,
+        setting_time_zone: str | None = None,
+        setting_screenshot_time_kyiv: bool = False
 ) -> Teacher:
     """Создать запись преподавателя"""
     teacher = Teacher(
         user_id=user_id,
+        leeearn_id=leeearn_id,
         additional_branch_id=additional_branch_id,
         is_contract_accepted=is_contract_accepted,
         contract_accepted_time=contract_accepted_time,
@@ -60,12 +64,13 @@ async def create_teacher(
 # ---- Обновление ----
 
 async def update_teacher(
-    session: AsyncSession,
-    user_id: UUID,
-    **kwargs
+        session: AsyncSession,
+        user_id: UUID,
+        **kwargs
 ) -> Teacher | None:
     """Обновить данные преподавателя"""
-    result = await session.execute(select(Teacher).where(Teacher.user_id == user_id))
+    result = await session.execute(
+        select(Teacher).where(Teacher.user_id == user_id))
     teacher = result.scalar_one_or_none()
     if not teacher:
         return None
@@ -96,5 +101,6 @@ async def delete_teacher(session: AsyncSession, user_id: UUID) -> bool:
 
 async def is_teacher_exists(session: AsyncSession, user_id: UUID) -> bool:
     """Проверить, существует ли преподаватель"""
-    result = await session.execute(select(Teacher).where(Teacher.user_id == user_id))
+    result = await session.execute(
+        select(Teacher).where(Teacher.user_id == user_id))
     return result.scalar_one_or_none() is not None

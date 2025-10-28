@@ -25,7 +25,52 @@ emojis = ["✌️", "✋", "🤝", "👋", "🙌"]
 #curator_photo_url = "https://imgpx.com/mBDN7C4gptST"
 
 file_id = None  # Переменная для хранения file_id
+default_photo_url = "https://imgpx.com/PYmMXpgIvVsW"
 
+
+async def start(
+            message: Message,
+            state: FSMContext,
+            config: dict,
+            # <-- Наш конфиг (в нем 'school_id' и 'welcome_message')
+            db: AsyncSession
+    ):
+    user_id = message.from_user.id
+    hi_emoji = random.choice(emojis)
+
+    await state.clear()
+
+    branch_id = uuid.UUID(config.get("school_id"))
+
+
+    if config.get("image_url", None):
+        image_url = config.get("image_url")
+    else:
+        image_url = default_photo_url
+    await state.update_data(image_url=image_url)
+
+    user = await get_user_by_telegram_id(db, telegram_id=user_id)
+
+    if user is None or user.branch_id != branch_id:
+        await message.answer("❌ Ви не маєте доступу до цього боту.")
+        return
+
+    roles = await get_user_roles(db, user_id=user.id)
+
+    # Если ролей нет
+    if not roles:
+        await message.answer("⚠️ У вас ще не призначено ролей.")
+        return
+
+    if len(roles) == 1:
+        await state.update_data(role_id=roles[0].id, user_id=user.id)
+        await action(db, message, state, user, roles[0], branch_id)
+        return
+    await state.update_data(branch_id=branch_id, user_id=user.id)
+    await message.answer(
+        text=f"{hi_emoji} Оберіть роль, під якою ви хочете увійти:",
+        reply_markup=await Markup.select_role(user, roles)
+    )
 
 # ----- Основная функция действия -----
 async def action(session: AsyncSession,
@@ -88,37 +133,7 @@ def create_teacher_start_router() -> Router:
             # <-- Наш конфиг (в нем 'school_id' и 'welcome_message')
             db: AsyncSession
     ):
-        user_id = message.from_user.id
-        hi_emoji = random.choice(emojis)
-
-        await state.clear()
-
-        branch_id = uuid.UUID(config.get("school_id"))
-        image_url = config.get("image_url")
-        await state.update_data(image_url=image_url)
-
-        user = await get_user_by_telegram_id(db, telegram_id=user_id)
-
-        if user is None or user.branch_id != branch_id:
-            await message.answer("❌ Ви не маєте доступу до цього боту.")
-            return
-
-        roles = await get_user_roles(db, user_id=user.id)
-
-        # Если ролей нет
-        if not roles:
-            await message.answer("⚠️ У вас ще не призначено ролей.")
-            return
-
-        if len(roles) == 1:
-            await state.update_data(role_id=roles[0].id, user_id=user.id)
-            await action(db, message, state, user, roles[0], branch_id)
-            return
-        await state.update_data(branch_id=branch_id, user_id=user.id)
-        await message.answer(
-            text=f"{hi_emoji} Оберіть роль, під якою ви хочете увійти:",
-            reply_markup=await Markup.select_role(user, roles)
-        )
+        await start(message, state, config, db)
 
     @teacher_start_router.callback_query(lambda c: c.data.startswith("select_role:"))
     async def select_role_callback(callback: CallbackQuery, state: FSMContext,
@@ -143,12 +158,13 @@ def create_teacher_start_router() -> Router:
         await action(db, callback.message, state, user, role, branch_id)
 
     @teacher_start_router.callback_query(F.data == "start")
-    async def go_to_start(callback: CallbackQuery, state: FSMContext,
+    async def go_to_start(callback: CallbackQuery,
+                          state: FSMContext,
                           db: AsyncSession):
         await callback.answer()
         data = await state.get_data()
 
-        user = await get_user_by_id(db, data["user_id"], with_roles=True)
+        user = await get_user_by_telegram_id(db, callback.from_user.id, with_roles=True)
         role = await get_role_by_id(db, data["role_id"])
         branch_id = data["branch_id"]
 
