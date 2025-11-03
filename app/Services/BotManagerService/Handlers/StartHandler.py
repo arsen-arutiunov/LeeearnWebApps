@@ -25,7 +25,7 @@ emojis = ["✌️", "✋", "🤝", "👋", "🙌"]
 #curator_photo_url = "https://imgpx.com/mBDN7C4gptST"
 
 file_id = None  # Переменная для хранения file_id
-default_photo_url = "https://imgpx.com/PYmMXpgIvVsW"
+default_photo_url = "https://staticstorage.leeearn.ai/apps/student_bot/student_management_bot.png"
 
 
 async def start(

@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from http.client import HTTPResponse
 from typing import TYPE_CHECKING
 
@@ -93,6 +94,71 @@ class GroupScheduleMethods(BaseMethods):
              "groupId": str(group_id)}
         )
 
+    async def Move(
+            self,
+            branch_id: SafeUUID | str,
+            group_id: SafeUUID | str,
+            data: dict
+    ) -> HTTPResponse:
+        """
+        Endpoint: /CompanyBranchGroupSchedule/Move
+
+        Body:
+        ``{
+            "companyBranchId": branch_id,
+            "groupId": group_id,
+            "data": {
+                "id": "...",
+                "date": "...",
+                "comment": "..."
+            }
+        }``
+
+        ВАЖНО: из переданной даты вычитаются 2 часа.
+        """
+        adjusted_data = data.copy()
+        if "date" in adjusted_data and adjusted_data["date"]:
+            try:
+                # поддержка ISO формата
+                original_date = datetime.fromisoformat(
+                    adjusted_data["date"].replace("Z", "+00:00"))
+                adjusted_date = original_date - timedelta(hours=2)
+                adjusted_data["date"] = adjusted_date.isoformat().replace(
+                    "+00:00", "Z")
+            except Exception as e:
+                raise ValueError(
+                    f"Invalid date format for 'date': {adjusted_data['date']} ({e})")
+
+        return await self.client.send_request(
+            f"{self.path}/Move",
+            {"companyBranchId": str(branch_id),
+             "groupId": str(group_id),
+             "data": adjusted_data}
+        )
+
+    async def Remove(
+            self,
+            branch_id: SafeUUID | str,
+            group_id: SafeUUID | str,
+            lesson_id: SafeUUID | str
+    ) -> HTTPResponse:
+        """
+        Endpoint: /CompanyBranchGroupSchedule/Remove
+
+        Body:
+        ``{
+            "companyBranchId": branch_id,
+            "groupId": group_id,
+            "data": lesson_id
+        }``
+        """
+        return await self.client.send_request(
+            f"{self.path}/Remove",
+            {"companyBranchId": str(branch_id),
+             "groupId": str(group_id),
+             "data": str(lesson_id)}
+        )
+
 
 class BoundGroupScheduleMethods:
     def __init__(self, methods: GroupScheduleMethods,
@@ -108,6 +174,12 @@ class BoundGroupScheduleMethods:
 
     async def Create(self, group_id: SafeUUID | str, data: dict):
         return await self.methods.Create(self.branch_id, group_id, data)
+
+    async def Move(self, group_id: SafeUUID | str, data: dict):
+        return await self.methods.Move(self.branch_id, group_id, data)
+
+    async def Remove(self, group_id: SafeUUID | str, lesson_id: SafeUUID | str):
+        return await self.methods.Remove(self.branch_id, group_id, lesson_id)
 
 
 class GroupScheduleClass(BaseClass[GroupScheduleMethods]):
@@ -126,3 +198,9 @@ class GroupScheduleClass(BaseClass[GroupScheduleMethods]):
 
     async def Create(self, data: dict):
         return await self.methods.Create(self.BranchId, self.Id, data)
+
+    async def Move(self, data: dict):
+        return await self.methods.Move(self.BranchId, self.Id, data)
+
+    async def Remove(self, lesson_id: SafeUUID | str):
+        return await self.methods.Remove(self.BranchId, self.Id, lesson_id)

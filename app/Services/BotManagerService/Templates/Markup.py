@@ -95,3 +95,34 @@ class Markup:
             ["Повернутись ↩️", "start_lessons"]
         ]
         return Markup.from_template(buttons, row_width=2)
+
+    @staticmethod
+    async def lesson_nopupil_confirm(lesson_id):
+        buttons = [
+            ["✅ Підтвердити", f"confirm_lesson:{lesson_id}"],
+            ["Повернутись ↩️", "start_lessons"]
+        ]
+        return Markup.from_template(buttons, row_width=2)
+
+    @staticmethod
+    async def choose_lesson(lessons):
+        buttons = []
+        for lesson in lessons:
+            buttons.append(
+                [f"{lesson['lesson_name']} | "
+                 f"{lesson['start_time'].split()[1]} - "
+                 f"{lesson['end_time'].split()[1]}",
+                 f"choose_lesson:{lesson['lesson_id']}"]
+            )
+        buttons.append(["Повернутись ↩️", "start_lessons"])
+        return Markup.from_template(buttons, row_width=1)
+
+    @staticmethod
+    async def choose_date(dates):
+        buttons = []
+        for date in dates:
+            buttons.append(
+                [f"{date}",
+                 f"choose_date:{date}"])
+        buttons.append(["Повернутись ↩️", "start_lessons"])
+        return Markup.from_template(buttons, row_width=1)
