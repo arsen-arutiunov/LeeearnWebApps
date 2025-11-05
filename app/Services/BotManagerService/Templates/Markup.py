@@ -71,12 +71,12 @@ class Markup:
     @staticmethod
     async def lessons_menu():
         buttons = [
-            ["Немає учня на уроці", "lesson_nopupil"],
+            ["Відмітити присутність учнів", "lesson_confirm_students"],
             ["Перенести плановий урок", "lesson_move_accept"],
             ["Зробити звіт за урок", "lesson_report"],
             ["Повернутись ↩️", "start"]
         ]
-        return Markup.from_template(buttons, row_width=2)
+        return Markup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def schedule_menu():
@@ -97,12 +97,23 @@ class Markup:
         return Markup.from_template(buttons, row_width=2)
 
     @staticmethod
-    async def lesson_nopupil_confirm(lesson_id):
-        buttons = [
-            ["✅ Підтвердити", f"confirm_lesson:{lesson_id}"],
-            ["Повернутись ↩️", "start_lessons"]
-        ]
-        return Markup.from_template(buttons, row_width=2)
+    async def lesson_confirm_student_list(students):
+        buttons = []
+        for student in students:
+            for name, lesson_id in student.items():
+                buttons.append(
+                    [name, f"lesson_confirm_student:{lesson_id}"]
+                )
+        buttons.append(["Повернутись ↩️", "start_lessons"])
+        return Markup.from_template(buttons, row_width=1)
+
+    @staticmethod
+    async def lesson_date_move(dates):
+        buttons = []
+        for date in dates:
+            buttons.append([date['date'], f"date_move:{date['date']}"])
+        buttons.append(["Повернутись ↩️", "start_lessons"])
+        return Markup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def choose_lesson(lessons):

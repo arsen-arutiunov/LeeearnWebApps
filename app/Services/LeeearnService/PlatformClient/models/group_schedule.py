@@ -159,6 +159,63 @@ class GroupScheduleMethods(BaseMethods):
              "data": str(lesson_id)}
         )
 
+    async def ConfirmStudent(
+            self,
+            branch_id: SafeUUID | str,
+            group_id: SafeUUID | str,
+            data: dict
+    ) -> HTTPResponse:
+        """
+        Endpoint: /CompanyBranchGroupSchedule/ConfirmStudent
+
+        Body:
+        ``{
+            "companyBranchId": branch_id,
+            "groupId": group_id,
+            "data": {
+                "groupScheduleItemId": "...",
+                "userId": "...",
+                "confirmed": true
+            }
+        }``
+        """
+        return await self.client.send_request(
+            f"{self.path}/ConfirmStudent",
+            {
+                "companyBranchId": str(branch_id),
+                "groupId": str(group_id),
+                "data": data
+            }
+        )
+
+    async def GetTeachersSchedule(
+            self,
+            branch_id: SafeUUID | str,
+            group_id: SafeUUID | str,
+            data: dict
+    ) -> HTTPResponse:
+        """
+        Endpoint: /CompanyBranchGroupSchedule/GetTeachersSchedule
+
+        Body:
+        ``{
+            "companyBranchId": branch_id,
+            "groupId": group_id,
+            "data": {
+                "from": "2025-10-10",
+                "to": "2025-10-25"
+            }
+        }``
+        """
+        return await self.client.send_request(
+            f"{self.path}/GetTeachersSchedule",
+            {
+                "companyBranchId": str(branch_id),
+                "groupId": str(group_id),
+                "data": data
+            }
+        )
+
 
 class BoundGroupScheduleMethods:
     def __init__(self, methods: GroupScheduleMethods,
@@ -180,6 +237,14 @@ class BoundGroupScheduleMethods:
 
     async def Remove(self, group_id: SafeUUID | str, lesson_id: SafeUUID | str):
         return await self.methods.Remove(self.branch_id, group_id, lesson_id)
+
+    async def ConfirmStudent(self, group_id: SafeUUID | str, data: dict):
+        return await self.methods.ConfirmStudent(self.branch_id, group_id,
+                                                 data)
+
+    async def GetTeachersSchedule(self, group_id: SafeUUID | str, data: dict):
+        return await self.methods.GetTeachersSchedule(self.branch_id, group_id,
+                                                      data)
 
 
 class GroupScheduleClass(BaseClass[GroupScheduleMethods]):
@@ -204,3 +269,10 @@ class GroupScheduleClass(BaseClass[GroupScheduleMethods]):
 
     async def Remove(self, lesson_id: SafeUUID | str):
         return await self.methods.Remove(self.BranchId, self.Id, lesson_id)
+
+    async def ConfirmStudent(self, data: dict):
+        return await self.methods.ConfirmStudent(self.BranchId, self.Id, data)
+
+    async def GetTeachersSchedule(self, data: dict):
+        return await self.methods.GetTeachersSchedule(self.BranchId, self.Id,
+                                                      data)
