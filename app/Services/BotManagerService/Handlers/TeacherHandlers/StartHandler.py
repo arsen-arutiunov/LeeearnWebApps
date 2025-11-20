@@ -8,9 +8,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.Objects.BranchRoleModel import BranchRole
 from app.Objects.UserModel import User
-from app.Services.BotManagerService.Templates.Markup import Markup
+from app.Services.BotManagerService.Templates.CustomerMarkup import \
+    CustomerMarkup
+from app.Services.BotManagerService.Templates.TeacherMarkup import TeacherMarkup
 from app.Services.BotManagerService.Templates.Text import Text
-from app.Services.ModelServices.BranchRoleServices import get_role_by_id
+from app.Services.ModelServices.BranchRoleService import get_role_by_id
 from app.Services.ModelServices.UserService import (
     get_user_by_telegram_id,
     get_user_roles, get_user_by_id,
@@ -69,7 +71,7 @@ async def start(
     await state.update_data(branch_id=branch_id, user_id=user.id)
     await message.answer(
         text=f"{hi_emoji} Оберіть роль, під якою ви хочете увійти:",
-        reply_markup=await Markup.select_role(user, roles)
+        reply_markup=await TeacherMarkup.select_role(user, roles)
     )
 
 # ----- Основная функция действия -----
@@ -90,7 +92,7 @@ async def action(session: AsyncSession,
                     caption=await Text.start_success_teacher(hi_emoji,
                                                              user.name),
                     parse_mode="html",
-                    reply_markup=await Markup.teacher_menu()
+                    reply_markup=await TeacherMarkup.teacher_menu()
                 )
             else:
                 await message.delete()
@@ -99,7 +101,7 @@ async def action(session: AsyncSession,
                     caption=await Text.start_success_teacher(hi_emoji,
                                                              user.name),
                     parse_mode="html",
-                    reply_markup=await Markup.teacher_menu()
+                    reply_markup=await TeacherMarkup.teacher_menu()
                 )
 
         elif role.name == "Куратор":
@@ -108,7 +110,7 @@ async def action(session: AsyncSession,
                 msg = await message.edit_caption(
                     caption="Тут будет контент для куратора",
                     parse_mode="html",
-                    reply_markup=await Markup.curators_menu()
+                    reply_markup=await TeacherMarkup.curators_menu()
                 )
             else:
                 await message.delete()
@@ -116,7 +118,23 @@ async def action(session: AsyncSession,
                     photo=data["image_url"],
                     caption="Тут будет контент для куратора",
                     parse_mode="html",
-                    reply_markup=await Markup.curators_menu()
+                    reply_markup=await TeacherMarkup.curators_menu()
+                )
+
+        elif role.name == "Учень":
+            if message.content_type == "photo":
+                msg = await message.edit_caption(
+                    caption="Привіт\nОбери свій запит. ↘️",
+                    parse_mode="html",
+                    reply_markup=await CustomerMarkup.customer_menu()
+                )
+            else:
+                await message.delete()
+                msg = await message.answer_photo(
+                    photo=data["image_url"],
+                    caption="Привіт\nОбери свій запит. ↘️",
+                    parse_mode="html",
+                    reply_markup=await CustomerMarkup.customer_menu()
                 )
     # здесь можешь запустить логику нужной роли (например, меню или обработчик)
     # ...
@@ -166,7 +184,7 @@ def create_teacher_start_router() -> Router:
 
         user = await get_user_by_telegram_id(db, callback.from_user.id, with_roles=True)
         role = await get_role_by_id(db, data["role_id"])
-        branch_id = data["branch_id"]
+        branch_id = user.branch_id
 
         await action(db, callback.message, state, user, role, branch_id)
 
@@ -180,7 +198,7 @@ def create_teacher_start_router() -> Router:
         await callback.message.delete()
         await callback.message.answer(
             text=f"{hi_emoji} Оберіть роль, під якою ви хочете увійти:",
-            reply_markup=await Markup.select_role(user, user.roles)
+            reply_markup=await TeacherMarkup.select_role(user, user.roles)
         )
 
 

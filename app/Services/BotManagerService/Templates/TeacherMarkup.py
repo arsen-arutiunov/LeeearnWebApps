@@ -5,7 +5,7 @@ from app.Objects.BranchRoleModel import BranchRole
 from app.Objects.UserModel import User
 
 
-class Markup:
+class TeacherMarkup:
     @staticmethod
     def from_template(buttons_template: list[list[str]], row_width: int = 1) -> InlineKeyboardMarkup:
         """
@@ -33,7 +33,7 @@ class Markup:
         buttons = []
         for role in roles:
             buttons.append([role.name, f"select_role:{role.id}"])
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)
 
 
     @staticmethod
@@ -46,7 +46,7 @@ class Markup:
             # ["Налаштування", "start_settings"],
             ["Змінити роль ↩️", "back_to_select_role"]
         ]
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def start_help(supervisor_url, branch):
@@ -59,14 +59,14 @@ class Markup:
              f"https://example.com"],
             ["Повернутись ↩️", "start"]
         ]
-        return Markup.from_template(buttons, row_width=2)
+        return TeacherMarkup.from_template(buttons, row_width=2)
 
     @staticmethod
     async def curators_menu():
         buttons = [
             ["Змінити роль ↩️", "back_to_select_role"]
         ]
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def lessons_menu():
@@ -76,7 +76,7 @@ class Markup:
             ["Зробити звіт за урок", "lesson_report"],
             ["Повернутись ↩️", "start"]
         ]
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def schedule_menu():
@@ -86,7 +86,7 @@ class Markup:
             ["🔁 Оновити", "start_schedule"],
             ["Повернутись ↩️", "start"]
         ]
-        return Markup.from_template(buttons, row_width=2)
+        return TeacherMarkup.from_template(buttons, row_width=2)
 
     @staticmethod
     async def move_lesson_acceptation():
@@ -94,7 +94,7 @@ class Markup:
             ["Продовжити", "lesson_move"],
             ["Повернутись ↩️", "start_lessons"]
         ]
-        return Markup.from_template(buttons, row_width=2)
+        return TeacherMarkup.from_template(buttons, row_width=2)
 
     @staticmethod
     async def lesson_confirm_student_list(students):
@@ -105,7 +105,7 @@ class Markup:
                     [name, f"lesson_confirm_student:{lesson_id}"]
                 )
         buttons.append(["Повернутись ↩️", "start_lessons"])
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def lesson_date_move(dates):
@@ -113,7 +113,7 @@ class Markup:
         for date in dates:
             buttons.append([date['date'], f"date_move:{date['date']}"])
         buttons.append(["Повернутись ↩️", "start_lessons"])
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def choose_lesson(lessons):
@@ -126,7 +126,7 @@ class Markup:
                  f"choose_lesson:{lesson['lesson_id']}"]
             )
         buttons.append(["Повернутись ↩️", "start_lessons"])
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)
 
     @staticmethod
     async def choose_date(dates):
@@ -136,4 +136,4 @@ class Markup:
                 [f"{date}",
                  f"choose_date:{date}"])
         buttons.append(["Повернутись ↩️", "start_lessons"])
-        return Markup.from_template(buttons, row_width=1)
+        return TeacherMarkup.from_template(buttons, row_width=1)

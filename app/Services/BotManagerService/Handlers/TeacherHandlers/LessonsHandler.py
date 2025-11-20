@@ -9,7 +9,7 @@ from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import CallbackQuery, Message
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.Services.BotManagerService.Templates.Markup import Markup
+from app.Services.BotManagerService.Templates.TeacherMarkup import TeacherMarkup
 from app.Services.BotManagerService.Templates.Text import Text
 from app.Services.LeeearnService.PlatformClient import PlatformClient
 from dotenv import load_dotenv
@@ -34,7 +34,7 @@ def create_teacher_router_lessons() -> Router:
                             db: AsyncSession):
         await callback.message.edit_caption(
             caption=await Text.lessons(),
-            reply_markup=await Markup.lessons_menu(),
+            reply_markup=await TeacherMarkup.lessons_menu(),
             parse_mode="html"
         )
 
@@ -46,7 +46,7 @@ def create_teacher_router_lessons() -> Router:
             caption="⚠️ Цю кнопочку натискаємо тільки тоді, коли "
                     "ви з учнем узгодили перенос уроку. Тобто коли "
                     "клієнт знає про те, що урок буде перенесено.",
-            reply_markup=await Markup.move_lesson_acceptation()
+            reply_markup=await TeacherMarkup.move_lesson_acceptation()
         )
 
     async def get_upcoming_lessons(branch_id: str, teacher_id: str):
@@ -136,14 +136,14 @@ def create_teacher_router_lessons() -> Router:
         if len(upcoming_lessons) == 0 or len(lesson_days) == 0:
             await callback.message.edit_caption(
                 caption="❌ Ви не можете подати запит на перенос, оскільки у вас немає уроків.",
-                reply_markup=await Markup.lessons_menu()
+                reply_markup=await TeacherMarkup.lessons_menu()
             )
             return
 
         if len(lesson_days) > 1:
             await callback.message.edit_caption(
                 caption="Оберіть дату:",
-                reply_markup=await Markup.choose_date(lesson_days)
+                reply_markup=await TeacherMarkup.choose_date(lesson_days)
             )
         else:
             if len(lesson_days) == 1:
@@ -160,7 +160,7 @@ def create_teacher_router_lessons() -> Router:
 
                 await callback.message.edit_caption(
                     caption="Оберіть урок:",
-                    reply_markup=await Markup.choose_lesson(lessons_for_date)
+                    reply_markup=await TeacherMarkup.choose_lesson(lessons_for_date)
                 )
 
     def parse_schedule_input(schedule_input):
@@ -314,7 +314,7 @@ def create_teacher_router_lessons() -> Router:
 
         await callback.message.edit_caption(
             caption="Оберіть дату на яку бажаєте перенести урок:",
-            reply_markup=await Markup.lesson_date_move(cleaned_teacher_slots)
+            reply_markup=await TeacherMarkup.lesson_date_move(cleaned_teacher_slots)
         )
         await state.update_data(group_id=group_id)
 
@@ -380,7 +380,7 @@ def create_teacher_router_lessons() -> Router:
                 chat_id=message.chat.id,
                 message_id=main_message_id,
                 caption=f"✅ Урок було перенесено на {full_datetime.strftime('%d.%m.%Y %H:%M')}",
-                reply_markup=await Markup.lessons_menu()
+                reply_markup=await TeacherMarkup.lessons_menu()
             )
         except Exception:
             await message.delete()
@@ -388,7 +388,7 @@ def create_teacher_router_lessons() -> Router:
                 chat_id=message.chat.id,
                 message_id=main_message_id,
                 caption=f"❌ При перенесенні урока виникла помилка.",
-                reply_markup=await Markup.lessons_menu()
+                reply_markup=await TeacherMarkup.lessons_menu()
             )
 
 
@@ -416,7 +416,7 @@ def create_teacher_router_lessons() -> Router:
 
         await callback.message.edit_caption(
             caption=f"Дата: {start_date_str}\n\nОберіть урок:",
-            reply_markup=await Markup.choose_lesson(lessons_for_date)
+            reply_markup=await TeacherMarkup.choose_lesson(lessons_for_date)
         )
 
     async def get_current_lesson(branch_id: str, teacher_id: str):
@@ -497,7 +497,7 @@ def create_teacher_router_lessons() -> Router:
         if not lesson:
             await callback.message.edit_caption(
                 caption="❌ Ви не можете подати запит, оскільки у вас зараз немає активного уроку.",
-                reply_markup=await Markup.lessons_menu()
+                reply_markup=await TeacherMarkup.lessons_menu()
             )
             return
 
@@ -530,7 +530,7 @@ def create_teacher_router_lessons() -> Router:
 
         await callback.message.edit_caption(
             caption=text,
-            reply_markup=await Markup.lesson_confirm_student_list(students)
+            reply_markup=await TeacherMarkup.lesson_confirm_student_list(students)
         )
         return
 
@@ -570,7 +570,7 @@ def create_teacher_router_lessons() -> Router:
 
         await callback.message.edit_caption(
             caption="Тут зібрали найчастіші запити до будь яких відділів.",
-            reply_markup=await Markup.lessons_menu()
+            reply_markup=await TeacherMarkup.lessons_menu()
         )
 
     return teacher_router_lessons

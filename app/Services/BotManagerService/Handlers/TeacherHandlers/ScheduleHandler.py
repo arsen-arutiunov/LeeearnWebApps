@@ -7,7 +7,7 @@ from aiogram.types import CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.Services import get_now
-from app.Services.BotManagerService.Templates.Markup import Markup
+from app.Services.BotManagerService.Templates.TeacherMarkup import TeacherMarkup
 from app.Services.BotManagerService.Templates.Text import Text
 from app.Services.LeeearnService.PlatformClient import PlatformClient
 from dotenv import load_dotenv
@@ -57,7 +57,7 @@ def create_teacher_router_schedule() -> Router:
                 date_text.capitalize()
             )
         await callback.message.edit_caption(caption=schedule_text,
-                                            reply_markup=await Markup.schedule_menu(),
+                                            reply_markup=await TeacherMarkup.schedule_menu(),
                                             parse_mode="html")
         print(await state.get_data())
     return teacher_router_schedule
