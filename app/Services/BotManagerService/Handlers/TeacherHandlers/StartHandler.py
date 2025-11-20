@@ -8,6 +8,9 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.Objects.BranchRoleModel import BranchRole
 from app.Objects.UserModel import User
+from app.Services.BotManagerService.Images import default_teacher_image, \
+    default_coordinator_image, default_student_image
+
 from app.Services.BotManagerService.Templates.CustomerMarkup import \
     CustomerMarkup
 from app.Services.BotManagerService.Templates.TeacherMarkup import TeacherMarkup
@@ -27,8 +30,6 @@ emojis = ["✌️", "✋", "🤝", "👋", "🙌"]
 #curator_photo_url = "https://imgpx.com/mBDN7C4gptST"
 
 file_id = None  # Переменная для хранения file_id
-default_photo_url = "https://staticstorage.leeearn.ai/apps/student_bot/student_management_bot.png"
-
 
 async def start(
             message: Message,
@@ -48,7 +49,7 @@ async def start(
     if config.get("image_url", None):
         image_url = config.get("image_url")
     else:
-        image_url = default_photo_url
+        image_url = None
     await state.update_data(image_url=image_url)
 
     user = await get_user_by_telegram_id(db, telegram_id=user_id)
@@ -85,8 +86,6 @@ async def action(session: AsyncSession,
     data = await state.get_data()
     if user.branch_id == branch_id and role.branch_id == branch_id and role in user.roles:
         if role.name == "Вчитель":
-            # TODO реализовать функционал дальше
-            """if message.content_type == "text":"""
             if message.content_type == "photo":
                 msg = await message.edit_caption(
                     caption=await Text.start_success_teacher(hi_emoji,
@@ -97,7 +96,7 @@ async def action(session: AsyncSession,
             else:
                 await message.delete()
                 msg = await message.answer_photo(
-                    photo=data["image_url"],
+                    photo=default_teacher_image,
                     caption=await Text.start_success_teacher(hi_emoji,
                                                              user.name),
                     parse_mode="html",
@@ -115,7 +114,7 @@ async def action(session: AsyncSession,
             else:
                 await message.delete()
                 msg = await message.answer_photo(
-                    photo=data["image_url"],
+                    photo=default_coordinator_image,
                     caption="Тут будет контент для куратора",
                     parse_mode="html",
                     reply_markup=await TeacherMarkup.curators_menu()
@@ -131,7 +130,7 @@ async def action(session: AsyncSession,
             else:
                 await message.delete()
                 msg = await message.answer_photo(
-                    photo=data["image_url"],
+                    photo=default_student_image,
                     caption="Привіт\nОбери свій запит. ↘️",
                     parse_mode="html",
                     reply_markup=await CustomerMarkup.customer_menu()

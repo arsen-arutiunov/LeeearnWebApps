@@ -15,6 +15,7 @@ from app.Services.BotManagerService.Handlers.TeacherHandlers.StartHandler import
     create_teacher_start_router
 )
 
+
 def create_main_router() -> Router:
     router = Router()
     router.include_router(create_teacher_start_router())
