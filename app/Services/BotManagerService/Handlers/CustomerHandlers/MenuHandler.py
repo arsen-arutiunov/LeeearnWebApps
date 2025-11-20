@@ -118,8 +118,17 @@ def customer_menu_handler() -> Router:
     async def lesson_link(callback: CallbackQuery,
                           state: FSMContext,
                           db: AsyncSession):
+        client = PlatformClient(
+            PLATFORM_API_URL,
+            MAIN_PLATFORMA_API_ID,
+            MAIN_PLATFORMA_API_ACCESS_TOKEN
+        )
+        client.debug_logs = True
+
         user = await get_user_by_telegram_id(db, callback.from_user.id,
                                              with_roles=True)
+
+        branch = client.GetBranch(user.branch_id)
 
         if user is None:
             await callback.answer("Користувача не було знайдено.", show_alert=True)
@@ -131,11 +140,28 @@ def customer_menu_handler() -> Router:
             return
 
         await callback.answer()
+        group_id = lesson.get('group')
+        response = await branch.Groups.GetDetails(
+            group_id=group_id
+        )
+        group_data = response.json()
+        teacher_id = group_data.get(
+            'data', None).get('teacherList', None).get('$values')[0].get('teacherUserId')
+        contacts_response = await branch.Teachers.GetContacts(teacher_id)
+        contacts = {contact["name"]: contact["value"] for contact in contacts_response.json().get('data', [])}
+
+        if len(contacts) == 0:
+            caption = (f"Не знайдено посилань для уроку.\n\n"
+                       f"{lesson['lesson_name']}\n"
+                       f"{lesson['start_time']} - {lesson['end_time']}")
+        else:
+            caption = (f"{lesson['lesson_name']}\n"
+                       f"{lesson['start_time']} - {lesson['end_time']}\n\n"
+                       ) + "\n\n".join([f'{name}\n{link}' for name, link in contacts.items()])
+
 
         await callback.message.edit_caption(
-            caption=f"Тут буде посилання на урок:\n\n"
-                    f"{lesson['lesson_name']}\n"
-                    f"{lesson['start_time']} - {lesson['end_time']}",
+            caption=caption,
             reply_markup=await CustomerMarkup.back_to_customers_menu()
         )
 

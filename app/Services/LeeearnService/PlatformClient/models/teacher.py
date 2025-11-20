@@ -102,6 +102,53 @@ class TeacherMethods(BaseMethods):
              "teacherId": str(teacher_id)}
         )
 
+    async def CreateContact(self, branch_id: SafeUUID | str,
+                            teacher_id: SafeUUID | str,
+                            name: str,
+                            value: str) -> HTTPResponse:
+        """
+        Endpoint: /CompanyBranchTeacher/CreateContact
+
+        Body:
+        {
+          "companyBranchId": ...,
+          "teacherId": ...,
+          "data": {
+            "name": "...",
+            "value": "..."
+          }
+        }
+        """
+        body = {
+            "companyBranchId": str(branch_id),
+            "teacherId": str(teacher_id),
+            "data": {
+                "name": name,
+                "value": value
+            }
+        }
+
+        return await self.client.send_request(f"{self.path}/CreateContact",
+                                              body)
+
+    async def GetContacts(self, branch_id: SafeUUID | str,
+                          teacher_id: SafeUUID | str) -> HTTPResponse:
+        """
+        Endpoint: /CompanyBranchTeacher/GetContacts
+
+        Body:
+        {
+          "companyBranchId": ...,
+          "teacherId": ...
+        }
+        """
+        body = {
+            "companyBranchId": str(branch_id),
+            "teacherId": str(teacher_id)
+        }
+
+        return await self.client.send_request(f"{self.path}/GetContacts", body)
+
 
 class BoundTeacherMethods:
     def __init__(self, methods: TeacherMethods, branch_id: SafeUUID | str):
@@ -124,6 +171,14 @@ class BoundTeacherMethods:
         return await self.methods.GetSchedule(self.branch_id, teacher_id,
                                               filter_query)
 
+    async def CreateContact(self, teacher_id: SafeUUID | str,
+                            name: str, value: str):
+        return await self.methods.CreateContact(self.branch_id, teacher_id,
+                                                name, value)
+
+    async def GetContacts(self, teacher_id: SafeUUID | str):
+        return await self.methods.GetContacts(self.branch_id, teacher_id)
+
 
 class TeacherClass(BaseClass[TeacherMethods]):
     BranchId: SafeUUID
@@ -143,3 +198,10 @@ class TeacherClass(BaseClass[TeacherMethods]):
     async def GetSchedule(self, filter_query=None):
         return await self.methods.GetSchedule(self.BranchId, self.Id,
                                               filter_query)
+
+    async def CreateContact(self, name: str, value: str):
+        return await self.methods.CreateContact(self.BranchId, self.Id, name,
+                                                value)
+
+    async def GetContacts(self):
+        return await self.methods.GetContacts(self.BranchId, self.Id)
